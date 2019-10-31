@@ -28,24 +28,19 @@ public class RegisterServlet extends HttpServlet {
         Integer age = Integer.parseInt(request.getParameter("password"));
         String detestr = request.getParameter("birthday");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
         try {
             Date birthday = format.parse(detestr);
-            User user = new User(name,password,sex,age,birthday);
             UserDao userDao = new UserDao();
-            Boolean rs = userDao.insert(user);
-            if (rs){
-                response.getWriter().println("注册成功");
-            }else {
-                response.getWriter().println("用户已存在");
-            }
+            User user = new User(name,password,sex,age,birthday);
+            boolean rs = userDao.register(user);
+            if (rs)
+             response.getWriter().println("注册成功");
+            else
+            response.getWriter().println("用户已存在");
         } catch (ParseException e) {
             e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
-
 
     }
 

@@ -58,8 +58,48 @@ public class UserDao {
         }
     }
 
-    public User getOne(){
-        return null;
+    public boolean register(User user){
+        try {
+            UserDao userDao = new UserDao();
+            boolean rs = userDao.insert(user);
+            if (rs){
+                return true;
+            }else {
+                return false;
+
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean login(String name,String password){
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "select * from users where name=? and password=?";
+            PreparedStatement preparedStatement =connection.prepareStatement(sql);
+            preparedStatement.setString(1,name);
+            preparedStatement.setString(2,password);
+            final ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()){
+                JDBCUtils.release(preparedStatement, connection, rs);
+                return true;
+            }else {
+                JDBCUtils.release(preparedStatement, connection, rs);
+                return false;
+
+            }
+
+        }catch (ClassNotFoundException | SQLException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public ArrayList<User> getList(){
@@ -92,4 +132,29 @@ public class UserDao {
         return null;
     }
 
+    public boolean update(User user){
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "update users set password=?,sex=?,age=?,birthday=? where name=?";
+            PreparedStatement preparedStatement =connection.prepareStatement(sql);
+            preparedStatement.setString(1,user.getPassword());
+            preparedStatement.setString(2,user.getSex());
+            preparedStatement.setInt(3,user.getAge());
+            preparedStatement.setDate(4,new java.sql.Date(user.getBirthday().getTime()));
+            preparedStatement.setString(5,user.getName());
+            int i = preparedStatement.executeUpdate();
+            if (i==0){
+                JDBCUtils.release(preparedStatement, connection);
+                return false;
+            }else {
+                JDBCUtils.release(preparedStatement, connection);
+                return true;
+
+            }
+
+        }catch (ClassNotFoundException | SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
