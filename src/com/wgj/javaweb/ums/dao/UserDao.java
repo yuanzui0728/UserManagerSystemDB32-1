@@ -20,6 +20,7 @@ public class UserDao {
             preparedStatement.setString(1, user.getName());
             final ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
+                JDBCUtils.release(preparedStatement, connection, rs);
                 return false;
             } else {
                 String sql1 = "insert into users (name,password,sex,age,birthday) values(?,?,?,?,?)";
@@ -34,19 +35,60 @@ public class UserDao {
                 return true;
             }
         } finally {
-
+            return false;
         }
     }
 
-    public boolean delete(){
-        return false;
+    public boolean delete(String name) throws SQLException, ClassNotFoundException {
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "delete from users where name=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            int i = preparedStatement.executeUpdate();
+            if (i == 0) {
+                JDBCUtils.release(preparedStatement, connection);
+                return false;
+            } else {
+                JDBCUtils.release(preparedStatement, connection);
+                return false;
+            }
+        } finally {
+            return false;
+        }
     }
 
     public User getOne(){
         return null;
     }
 
-    public ArrayList getList(){
+    public ArrayList<User> getList(){
+        //到全局变量列表中去比对，比对的原则：用户名和密码都要相同，否则返回用户名或密码错误信息
+        ////获取全局servletContext对象的user变量
+        try {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = "select * from users";
+            PreparedStatement preparedStatement =connection.prepareStatement(sql);
+            final ResultSet rs = preparedStatement.executeQuery(sql);
+            //操作结果集
+            ArrayList<User> result = new ArrayList<>();
+            while (rs.next()){
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
+                String password = rs.getString("password");
+                String sex = rs.getString("sex");
+                Integer age = rs.getInt("age");
+                Date birthday = rs.getDate("birthday");
+                System.out.println(id+name);
+                User user = new User(id,name,null,sex,age,birthday);
+                result.add(user);
+            }
+            JDBCUtils.release(preparedStatement, connection, rs);
+            return result;
+
+        }catch (ClassNotFoundException | SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 

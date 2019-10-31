@@ -80,4 +80,13 @@ public class User {
         this.age = age;
         this.birthday = birthday;
     }
+
+    public User(Integer id, String name, String password, String sex, Integer age, Date birthday) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.sex = sex;
+        this.age = age;
+        this.birthday = birthday;
+    }
 }

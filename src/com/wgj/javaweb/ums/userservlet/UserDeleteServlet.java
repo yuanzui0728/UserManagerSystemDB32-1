@@ -1,5 +1,7 @@
 package com.wgj.javaweb.ums.userservlet;
 
+import com.wgj.javaweb.ums.dao.UserDao;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,25 +18,16 @@ public class UserDeleteServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //接受参数
         String name = request.getParameter("name");
+        UserDao userDao = new UserDao();
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/javawebdb";
-            String connectionUserName = "root";
-            String connectionUserPassword = "root";
-            Connection connection = DriverManager.getConnection(url,connectionUserName,connectionUserPassword);
-            String sql = "delete from users where name=?";
-            PreparedStatement preparedStatement =connection.prepareStatement(sql);
-            preparedStatement.setString(1,name);
-            int i = preparedStatement.executeUpdate();
-            if (i==0){
-                response.getWriter().println("用户不存在");
-            }else {
+            Boolean rs = userDao.delete(name);
+            if (rs)
                 response.getWriter().println("删除成功");
-            }
-            preparedStatement.close();
-            connection.close();
-
-        }catch (ClassNotFoundException | SQLException e){
+            else
+                response.getWriter().println("用户不存在");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

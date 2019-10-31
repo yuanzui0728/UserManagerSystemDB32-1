@@ -32,7 +32,12 @@ public class RegisterServlet extends HttpServlet {
             Date birthday = format.parse(detestr);
             User user = new User(name,password,sex,age,birthday);
             UserDao userDao = new UserDao();
-            userDao.insert(user);
+            Boolean rs = userDao.insert(user);
+            if (rs){
+                response.getWriter().println("注册成功");
+            }else {
+                response.getWriter().println("用户已存在");
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (SQLException e) {
