@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查询所有用户</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    function timestampToTime(timestamp) {
+        var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        D = date.getDate() + ' ';
+        h = date.getHours() + ':';
+        m = (date.getMinutes() < 10 ? '0'+(date.getMinutes()) : date.getMinutes()) + ':';
+        s = (date.getSeconds() < 10 ? '0'+(date.getSeconds()) : date.getSeconds());
+        return Y+M+D+h+m+s;
+    }
+
+    $(function () {
+        //点击事件的方法代码
+        $("#bynSelectAllUser").click(function () {
+            //post请求
+            $.post("/SelectAllServlet",
+                function (data,status) {
+                    console.log(data);
+                    $("#table_data").empty();
+                    for (var i=0;i<data.length;i++){
+                        var $trTemp = $("<tr></tr>");
+                        $trTemp.append("<td>"+data[i].id+"</td>");
+                        $trTemp.append("<td>"+data[i].name+"</td>");
+                        $trTemp.append("<td>"+data[i].sex+"</td>");
+                        $trTemp.append("<td>"+data[i].age+"</td>");
+                        $trTemp.append("<td>"+timestampToTime(data[i].birthday)+"</td>");
+                        $trTemp.appendTo("#table_data");
+                    }
+                })
+        })
+    })
+</script>
+<body>
+<!--<form action="/SelectAllServlet" method="post">-->
+<!--    用户名:<input type="text" name="name" value="">-->
+<!--    <input type="text" name="password" value="">-->
+<!--    <input type="submit" value="登陆">-->
+<!--</form>-->
+<button id="bynSelectAllUser" type="button">查询所有用户</button>
+<table border="1">
+    <thead>
+        <th>id</th>
+        <th>name</th>
+        <th>sex</th>
+        <th>age</th>
+        <th>birthday</th>
+    </thead>
+    <tbody id="table_data">
+    </tbody>
+
+</table>
+</body>
+</html>
